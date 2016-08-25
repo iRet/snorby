@@ -42,8 +42,8 @@ class Sensor < ActiveRecord::Base
   end
 
   def sensor_name
-    return name unless name == 'Click To Change Me'
-    hostname
+    return hostname if name == 'Click To Change Me'
+    name
   end
 
   def daily_cache

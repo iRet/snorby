@@ -88,6 +88,16 @@ class Event < ActiveRecord::Base
 
   default_scope { order(sid: :ASC, cid: :ASC) }
 
+  # Following methods should be used to retrieve ips instead of ip relation
+  # They will return fake 0.0.0.0 address in case event is ip-less
+  def ip_src
+    ip ? ip.ip_src : IPAddr.new('0.0.0.0')
+  end
+
+  def ip_dst
+    ip ? ip.ip_dst : IPAddr.new('0.0.0.0')
+  end
+
   SORT = {
     sig_priority: 'signature',
     sid: 'event',
@@ -438,22 +448,18 @@ class Event < ActiveRecord::Base
 
 
   def detailed_json
-
-    geoip = Setting.geoip?
-    ip = self.ip
-
     event = {
-      :sid => self.sid,
-      :cid => self.cid,
-      :hostname => self.sensor.sensor_name,
-      :severity => self.signature.sig_priority,
-      :session_count => self.number_of_events,
-      :ip_src => self.ip.ip_src.to_s,
-      :ip_dst => self.ip.ip_dst.to_s,
-      :asset_names => self.ip.asset_names,
-      :timestamp => self.pretty_time,
-      :datetime => self.timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p'),
-      :message =>  self.signature.name,
+      :sid => sid,
+      :cid => cid,
+      :hostname => sensor.try(:sensor_name),
+      :severity => signature.sig_priority,
+      :session_count => number_of_events,
+      :ip_src => ip_src.to_s,
+      :ip_dst => ip_dst.to_s,
+      :asset_names => ip.try(:asset_names),
+      :timestamp => pretty_time,
+      :datetime => timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p'),
+      :message =>  signature.name,
       :geoip => false,
       :src_port => src_port,
       :dst_port => dst_port,
@@ -464,7 +470,7 @@ class Event < ActiveRecord::Base
 
     }
 
-    if geoip
+    if ip && Setting.geoip?
       event.merge!({
         :geoip => true,
         :src_geoip => ip.geoip[:source],
@@ -490,33 +496,28 @@ class Event < ActiveRecord::Base
   #
   def self.to_json_since(time)
 
-    if !time
-      time = Time.zone.now
-    end
+    time  != Time.zone.now
+    events = Event.all(:timestamp.gt => Time.zone.parse(time.to_s),
+                       :classification_id => nil,
+                       :order => [:timestamp.desc])
 
-    geoip = Setting.geoip?
-    events = Event.where(classification_id: nil)
-                  .where('timestamp > ?', Time.zone.parse(time.to_s))
-                  .order(timestamp: :desc)
-    json = { events: [] }
+    json = {:events => []}
 
     events.each do |event|
-      ip = event.ip
-
       event = {
         :sid => event.sid,
         :cid => event.cid,
         :hostname => event.sensor.sensor_name,
         :severity => event.signature.sig_priority,
-        :ip_src => ip.ip_src.to_s,
-        :ip_dst => ip.ip_dst.to_s,
+        :ip_src => ip_src.to_s,
+        :ip_dst => ip_dst.to_s,
         :timestamp => event.pretty_time,
         :datetime => event.timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p'),
         :message => event.signature.name,
         :geoip => false
       }
 
-      if geoip
+      if ip && Setting.geoip?
         event.merge!({
           :geoip => true,
           :src_geoip => ip.geoip[:source],
@@ -526,6 +527,7 @@ class Event < ActiveRecord::Base
 
       json[:events] << event
     end
+
     return json
   end
 

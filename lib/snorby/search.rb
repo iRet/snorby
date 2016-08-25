@@ -69,7 +69,7 @@ module Snorby
 
     SENSOR = "inner join sensor on event.sid = sensor.sid "
 
-    IP = "inner join iphdr on event.sid = iphdr.sid and event.cid = iphdr.cid "
+    IP = "left join iphdr on event.sid = iphdr.sid and event.cid = iphdr.cid "
 
     PAYLOAD = "inner join data on event.sid = data.sid and event.cid = data.cid "
 
@@ -451,7 +451,7 @@ module Snorby
       @signatures ||= Signature.select(:sig_name, :sig_id)
       @classifications ||= Classification.select(:name, :id)
       @users ||= User.select(:name, :id)
-      @sensors ||= Sensor.select(:name, :sid)
+      @sensors ||= Sensor.select(:name, :sid, :hostname)
       @severities ||= Severity.select(:name, :sig_id)
 
       @json ||= {
