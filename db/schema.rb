@@ -21,14 +21,6 @@ ActiveRecord::Schema.define(version: 20160527182126) do
   add_index "agent_asset_names", ["asset_name_id"], name: "index_agent_asset_names_asset_name", using: :btree
   add_index "agent_asset_names", ["sensor_sid"], name: "index_agent_asset_names_sensor", using: :btree
 
-  create_table "aggregated_events", id: false, force: :cascade do |t|
-    t.integer "ip_src",           limit: 4, default: 0, null: false
-    t.integer "ip_dst",           limit: 4, default: 0, null: false
-    t.integer "signature",        limit: 4
-    t.integer "event_id",         limit: 4
-    t.integer "number_of_events", limit: 8, default: 0, null: false
-  end
-
   create_table "asset_names", force: :cascade do |t|
     t.integer "ip_address", limit: 4,    default: 0,    null: false
     t.string  "name",       limit: 1024,                null: false
@@ -105,8 +97,8 @@ ActiveRecord::Schema.define(version: 20160527182126) do
   add_index "encoding", ["encoding_type"], name: "index_encoding_encoding_type", using: :btree
 
   create_table "event", id: false, force: :cascade do |t|
-    t.integer  "sid",               limit: 4, null: false
-    t.integer  "cid",               limit: 4, null: false
+    t.integer  "sid",               limit: 4,             null: false
+    t.integer  "cid",               limit: 4,             null: false
     t.integer  "signature",         limit: 4
     t.integer  "classification_id", limit: 4
     t.integer  "users_count",       limit: 4, default: 0
@@ -115,7 +107,7 @@ ActiveRecord::Schema.define(version: 20160527182126) do
     t.integer  "type",              limit: 4, default: 1
     t.integer  "number_of_events",  limit: 4, default: 0
     t.datetime "timestamp"
-    t.integer  "id",                limit: 4, null: false
+    t.integer  "id",                limit: 4,             null: false
   end
 
   add_index "event", ["cid"], name: "index_event_cid", using: :btree
@@ -127,24 +119,6 @@ ActiveRecord::Schema.define(version: 20160527182126) do
   add_index "event", ["timestamp", "cid", "sid"], name: "index_timestamp_cid_sid", using: :btree
   add_index "event", ["user_id"], name: "index_event_user_id", using: :btree
   add_index "event", ["users_count"], name: "index_event_users_count", using: :btree
-
-  create_table "events_with_join", id: false, force: :cascade do |t|
-    t.integer  "sid",               limit: 4,                 null: false
-    t.integer  "cid",               limit: 4,                 null: false
-    t.integer  "signature",         limit: 4
-    t.integer  "classification_id", limit: 4
-    t.integer  "users_count",       limit: 4,     default: 0
-    t.integer  "user_id",           limit: 4
-    t.integer  "notes_count",       limit: 4,     default: 0
-    t.integer  "type",              limit: 4,     default: 1
-    t.integer  "number_of_events",  limit: 4,     default: 0
-    t.datetime "timestamp"
-    t.integer  "id",                limit: 4,     default: 0, null: false
-    t.integer  "ip_src",            limit: 4,     default: 0, null: false
-    t.integer  "ip_dst",            limit: 4,     default: 0, null: false
-    t.integer  "sig_priority",      limit: 4
-    t.text     "sig_name",          limit: 65535
-  end
 
   create_table "favorites", force: :cascade do |t|
     t.integer "sid",     limit: 4
@@ -280,9 +254,9 @@ ActiveRecord::Schema.define(version: 20160527182126) do
     t.integer  "detail",         limit: 4
     t.integer  "encoding",       limit: 4
     t.integer  "last_cid",       limit: 4
-    t.boolean  "pending_delete", default: false
+    t.boolean  "pending_delete",               default: false
     t.datetime "updated_at"
-    t.integer  "events_count", limit: 4, default: 0
+    t.integer  "events_count",   limit: 4,     default: 0
   end
 
   add_index "sensor", ["detail"], name: "index_sensor_detail", using: :btree
@@ -292,8 +266,8 @@ ActiveRecord::Schema.define(version: 20160527182126) do
   add_index "sensor", ["sid"], name: "index_sensor_sid", using: :btree
 
   create_table "settings", force: :cascade do |t|
-    t.string "name", limit: 50
-    t.text "value", limit: 16777215
+    t.string "name",  limit: 50
+    t.text   "value", limit: 16777215
   end
 
   add_index "settings", ["name"], name: "index_settings_name", using: :btree
