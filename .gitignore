@@ -39,3 +39,6 @@ config/database.yml
 config/snorby.yml
 config/snorby-geoip.dat
 snorby.war
+
+Vagrantfile
+.vagrant/

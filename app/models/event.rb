@@ -30,13 +30,13 @@ class Event
   property :users_count, Integer, :index => true, :default => 0, :min => 0
 
   property :user_id, Integer, :index => true, :required => false, :min => 0
-  
+
   property :notes_count, Integer, :index => true, :default => 0, :min => 0
- 
+
   # 1 = nids
   # 2 = hids
   # others TBD
-  property :type, Integer, :default => 1, :min => 0 
+  property :type, Integer, :default => 1, :min => 0
 
   # Fake Column
   property :number_of_events, Integer, :default => 0, :min => 0
@@ -48,39 +48,39 @@ class Event
 
   property :timestamp, ZonedTime
 
-  has n, :favorites, :parent_key => [ :sid, :cid ], 
+  has n, :favorites, :parent_key => [ :sid, :cid ],
     :child_key => [ :sid, :cid ], :constraint => :destroy!
 
   has n, :users, :through => :favorites
 
   has 1, :severity, :through => :signature, :via => :sig_priority
 
-  has 1, :payload, :parent_key => [ :sid, :cid ], 
+  has 1, :payload, :parent_key => [ :sid, :cid ],
     :child_key => [ :sid, :cid ], :constraint => :destroy!
 
-  has 1, :icmp, :parent_key => [ :sid, :cid ], 
+  has 1, :icmp, :parent_key => [ :sid, :cid ],
     :child_key => [ :sid, :cid ], :constraint => :destroy!
 
-  has 1, :tcp, :parent_key => [ :sid, :cid ], 
+  has 1, :tcp, :parent_key => [ :sid, :cid ],
     :child_key => [ :sid, :cid ], :constraint => :destroy!
 
-  has 1, :udp, :parent_key => [ :sid, :cid ], 
+  has 1, :udp, :parent_key => [ :sid, :cid ],
     :child_key => [ :sid, :cid ], :constraint => :destroy!
 
-  has 1, :opt, :parent_key => [ :sid, :cid ], 
+  has 1, :opt, :parent_key => [ :sid, :cid ],
     :child_key => [ :sid, :cid ], :constraint => :destroy!
 
-  has n, :notes, :parent_key => [ :sid, :cid ], 
+  has n, :notes, :parent_key => [ :sid, :cid ],
     :child_key => [ :sid, :cid ], :constraint => :destroy!
 
   belongs_to :user
 
-  belongs_to :sensor, :parent_key => :sid, 
+  belongs_to :sensor, :parent_key => :sid,
     :child_key => :sid, :required => true
 
   belongs_to :signature, :child_key => :sig_id, :parent_key => :sig_id
 
-  belongs_to :ip, :parent_key => [ :sid, :cid ], :child_key => [ :sid, :cid ]
+  has 1, :ip, :parent_key => [ :sid, :cid ], :child_key => [ :sid, :cid ]
 
   before :destroy do
     self.classification.down(:events_count) if self.classification
@@ -88,7 +88,7 @@ class Event
     # Note: Need to decrement Severity, Sensor and User Counts
   end
 
-   SORT = { 
+   SORT = {
     :sig_priority => 'signature',
     :sid => 'event',
     :ip_src => 'ip',
@@ -98,6 +98,16 @@ class Event
     :user_count => 'event',
     :number_of_events => 'event'
   }
+
+  # Following methods should be used to retrieve ips instead of ip relation
+  # They will return fake 0.0.0.0 address in case event is ip-less
+  def ip_src
+    ip ? ip.ip_src : IPAddr.new('0.0.0.0')
+  end
+
+  def ip_dst
+    ip ? ip.ip_dst : IPAddr.new('0.0.0.0')
+  end
 
   def self.last_event_timestamp
     event = first(:order => [:timestamp.desc])
@@ -112,14 +122,14 @@ class Event
   def helpers
     ActionController::Base.helpers
   end
- 
+
 
   def self.unique_events_by_source_ip
     data = []
 
     ips = Ip.all(:limit => 25, :fields => [:ip_src], :unique => true).map(&:ip_src)
-    events = ips.collect do |ip| 
-      Event.all(:'ip.ip_src' => ip, :order => :timestamp.desc).group_by do |x| 
+    events = ips.collect do |ip|
+      Event.all(:'ip.ip_src' => ip, :order => :timestamp.desc).group_by do |x|
         x.sig_id
       end
     end
@@ -129,7 +139,7 @@ class Event
       next if set.values.blank?
 
       set.each do |key, value|
-        
+
         data << value.first
       end
     end
@@ -151,14 +161,14 @@ class Event
       sql[0] += " order by #{sort} #{direction}"
       sql[0] += " LIMIT ? OFFSET ?"
 
-      page(params[:page], { 
+      page(params[:page], {
         :per_page => (params[:limit] ? params[:limit].to_i : User.current_user.per_page_count.to_i),
         :order => :timestamp.desc
       }, sql, count)
     else
 
       if sql
-        
+
         page(params[:page].to_i, page, sql, count);
 
       else
@@ -167,7 +177,7 @@ class Event
           page.merge!(:order => sort.send(direction))
         else
           page.merge!(
-            :order => [Event.send(SORT[sort].to_sym).send(sort).send(direction), 
+            :order => [Event.send(SORT[sort].to_sym).send(sort).send(direction),
                        :timestamp.send(direction)],
             :links => [Event.relationships[SORT[sort].to_s].inverse]
           )
@@ -208,7 +218,7 @@ class Event
     sid, gid = [/\$\$sid\$\$/, /\$\$gid\$\$/]
 
     @signature_url = if Setting.signature_lookup?
-      Setting.find(:signature_lookup) 
+      Setting.find(:signature_lookup)
     else
       SIGNATURE_URL
     end
@@ -241,22 +251,22 @@ class Event
   end
 
   def self.last_month
-    all(:timestamp.gte => 2.month.ago.beginning_of_month, 
+    all(:timestamp.gte => 2.month.ago.beginning_of_month,
         :timestamp.lte => 1.month.ago.end_of_month)
   end
 
   def self.last_week
-    all(:timestamp.gte => 2.week.ago.beginning_of_week, 
+    all(:timestamp.gte => 2.week.ago.beginning_of_week,
         :timestamp.lte => 1.week.ago.end_of_week)
   end
 
   def self.yesterday
-    all(:timestamp.gte => 1.day.ago.beginning_of_day, 
+    all(:timestamp.gte => 1.day.ago.beginning_of_day,
         :timestamp.lte => 1.day.ago.end_of_day)
   end
 
   def self.today
-    all(:timestamp.gte => Time.now.beginning_of_day, 
+    all(:timestamp.gte => Time.now.beginning_of_day,
         :timestamp.lte => Time.now.end_of_day)
   end
 
@@ -273,12 +283,12 @@ class Event
   end
 
   def self.between(start_time, end_time)
-    all(:timestamp.gte => start_time, :timestamp.lte => end_time, 
+    all(:timestamp.gte => start_time, :timestamp.lte => end_time,
         :order => [:timestamp.desc])
   end
 
   def self.between_time(start_time, end_time)
-    all(:timestamp.gte => start_time, :timestamp.lt => end_time, 
+    all(:timestamp.gte => start_time, :timestamp.lt => end_time,
         :order => [:timestamp.desc])
   end
 
@@ -315,7 +325,7 @@ class Event
         event = e.split('-')
         event_count += 1
 
-        events.push("(`sid` = #{event.first.to_i} and `cid` = #{event.last.to_i})") 
+        events.push("(`sid` = #{event.first.to_i} and `cid` = #{event.last.to_i})")
       end
 
       sql += events.join(' OR ')
@@ -425,24 +435,19 @@ class Event
     "#{timestamp.strftime('%m/%d/%Y')}"
   end
 
-
-  def detailed_json 
-
-    geoip = Setting.geoip?
-    ip = self.ip
-
+  def detailed_json
     event = {
-      :sid => self.sid,
-      :cid => self.cid,
-      :hostname => self.sensor.sensor_name,
-      :severity => self.signature.sig_priority,
-      :session_count => self.number_of_events,
-      :ip_src => self.ip.ip_src.to_s,
-      :ip_dst => self.ip.ip_dst.to_s,
-      :asset_names => self.ip.asset_names,
-      :timestamp => self.pretty_time,
-      :datetime => self.timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p'),
-      :message =>  self.signature.name, 
+      :sid => sid,
+      :cid => cid,
+      :hostname => sensor.try(:sensor_name),
+      :severity => signature.sig_priority,
+      :session_count => number_of_events,
+      :ip_src => ip_src.to_s,
+      :ip_dst => ip_dst.to_s,
+      :asset_names => ip.try(:asset_names),
+      :timestamp => pretty_time,
+      :datetime => timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p'),
+      :message =>  signature.name,
       :geoip => false,
       :src_port => src_port,
       :dst_port => dst_port,
@@ -453,7 +458,7 @@ class Event
 
     }
 
-    if geoip
+    if ip && Setting.geoip?
       event.merge!({
         :geoip => true,
         :src_geoip => ip.geoip[:source],
@@ -478,32 +483,29 @@ class Event
   # @return [Hash] hash of events between range.
   #
   def self.to_json_since(time)
-   
-    if !time
-      time = Time.zone.now
-    end
 
-    geoip = Setting.geoip?
-    events = Event.all(:timestamp.gt => Time.zone.parse(time.to_s), :classification_id => nil, :order => [:timestamp.desc])
+    time  != Time.zone.now
+    events = Event.all(:timestamp.gt => Time.zone.parse(time.to_s),
+                       :classification_id => nil,
+                       :order => [:timestamp.desc])
+
     json = {:events => []}
 
     events.each do |event|
-      ip = event.ip
-
       event = {
         :sid => event.sid,
         :cid => event.cid,
         :hostname => event.sensor.sensor_name,
         :severity => event.signature.sig_priority,
-        :ip_src => ip.ip_src.to_s,
-        :ip_dst => ip.ip_dst.to_s,
+        :ip_src => ip_src.to_s,
+        :ip_dst => ip_dst.to_s,
         :timestamp => event.pretty_time,
         :datetime => event.timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p'),
         :message => event.signature.name,
         :geoip => false
       }
 
-      if geoip
+      if ip && Setting.geoip?
         event.merge!({
           :geoip => true,
           :src_geoip => ip.geoip[:source],
@@ -513,6 +515,7 @@ class Event
 
       json[:events] << event
     end
+
     return json
   end
 
@@ -520,7 +523,7 @@ class Event
     return true if User.current_user.events.include?(self)
     false
   end
-  
+
   def toggle_favorite
     if self.favorite?
       destroy_favorite
@@ -561,7 +564,7 @@ class Event
       false
     end
   end
-  
+
   def source_port
     return nil unless protocol_data
 
@@ -571,7 +574,7 @@ class Event
       protocol_data.last.send(:"#{protocol_data.first}_sport")
     end
   end
- 
+
   def rule
     @rule = Snorby::Rule.get({
       :rule_id => signature.sig_sid,
@@ -591,7 +594,7 @@ class Event
       protocol_data.last.send(:"#{protocol_data.first}_dport")
     end
   end
-  
+
   def in_xml
     # add user information
     %{<snorby>#{to_xml}#{ip.to_xml}#{protocol_data.last.to_xml if protocol_data}#{classification.to_xml if classification}#{payload.to_xml if payload}</snorby>}.chomp
@@ -714,11 +717,11 @@ class Event
 
     end
   rescue => e
-    Rails.logger.info(e.backtrace)        
+    Rails.logger.info(e.backtrace)
   end
 
   def self.build_search_hash(column, operator, value)
-   ["#{column} #{operator}", value] 
+   ["#{column} #{operator}", value]
   end
 
   def self.search(params, pager={})
@@ -756,13 +759,13 @@ class Event
     unless params[:signature_name].blank?
       @search.merge!({
         :"signature.sig_name".like => "%#{params[:signature_name]}%"
-      })  
+      })
     end
-    
+
     unless params[:src_port].blank?
       @search.merge!({:"tcp.tcp_sport" => params[:src_port].to_i})
     end
-     
+
     unless params[:dst_port].blank?
       @search.merge!({:"tcp.tcp_dport" => params[:dst_port].to_i})
     end
@@ -777,7 +780,7 @@ class Event
         })
       else
         @search.merge!({:"ip.ip_src".like => IPAddr.new("#{params[:ip_src]}")})
-      end 
+      end
     end
 
     unless params[:ip_dst].blank?
@@ -811,12 +814,12 @@ class Event
 
       if params[:timestamp] =~ /\s\-\s/
         start_time, end_time = params[:timestamp].split(' - ')
-        @search.merge!({:conditions => ['timestamp >= ? AND timestamp <= ?', 
-                       Chronic.parse(start_time).beginning_of_day, 
+        @search.merge!({:conditions => ['timestamp >= ? AND timestamp <= ?',
+                       Chronic.parse(start_time).beginning_of_day,
                        Chronic.parse(end_time).end_of_day]})
       else
-        @search.merge!({:conditions => ['timestamp >= ? AND timestamp <= ?', 
-                       Chronic.parse(params[:timestamp]).beginning_of_day, 
+        @search.merge!({:conditions => ['timestamp >= ? AND timestamp <= ?',
+                       Chronic.parse(params[:timestamp]).beginning_of_day,
                        Chronic.parse(params[:timestamp]).end_of_day]})
       end
 
@@ -825,7 +828,7 @@ class Event
     unless params[:severity].blank?
       @search.merge!({:"signature.sig_priority" => params[:severity].to_i})
     end
-  
+
     search
 
   rescue NetAddr::ValidationError => e

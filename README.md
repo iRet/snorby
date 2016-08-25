@@ -12,8 +12,8 @@ Snorby is a ruby on rails web application for network security monitoring that i
 ## Requirements
 
 * Snort
-* Ruby >= 1.9.2
-* Rails >= 3.0.0
+* Ruby 2.1.5
+* Rails 3.2.22.4
 
 ## Install
 
@@ -28,13 +28,13 @@ Snorby is a ruby on rails web application for network security monitoring that i
 * Install Gem Dependencies  (make sure you have bundler installed: `gem install bundler`)
 
 	`$ bundle install`
-	
+
 	* NOTE: If you get missing gem issues in production use `bundle install --path vendor/cache`
 
-	* If your system gems are updated beyond the gemfile.lock you should use as an example `bundle exec rake snorby:setup` 
+	* If your system gems are updated beyond the gemfile.lock you should use as an example `bundle exec rake snorby:setup`
 
-	* If running `bundle exec {app}` is painful you can safely install binstubs by `bundle install --binstubs` 
-	
+	* If running `bundle exec {app}` is painful you can safely install binstubs by `bundle install --binstubs`
+
 * Install wkhtmltopdf
 
 	`pdfkit --install-wkhtmltopdf # If this fails - visit http://wkhtmltopdf.org/ for more information`
@@ -42,7 +42,7 @@ Snorby is a ruby on rails web application for network security monitoring that i
 * Run The Snorby Setup
 
 	`rake snorby:setup`
-	
+
 	* NOTE: If you get warning such as "already initialized constant PDF", you can fix it by running these commands :
 
 	```
@@ -54,35 +54,35 @@ Snorby is a ruby on rails web application for network security monitoring that i
 * Edit The Snorby Configuration File
 
 	`config/snorby_config.yml`
-	
+
 * Edit The Snorby Mail Configurations
 
 	`config/initializers/mail_config.rb`
-	
+
 * Once all options have been configured and snorby is up and running
 
 	* Make sure you start the Snorby Worker from the Administration page.
 	* Make sure that both the `DailyCache` and `SensorCache` jobs are running.
-	
+
 * Default User Credentials
 
 	* E-mail: **snorby@example.com**
 	* Password: **snorby**
-	
+
 * NOTE - If you do not run Snorby with passenger (http://www.modrails.com) people remember to start rails in production mode.
 
 	`rails -e production`
-	
+
 ## Updating Snorby
 
 In the root Snorby directory type the following command:
 
 	`git pull origin master`
-	
+
 Once the pull has competed successfully run the Snorby update rake task:
 
 	`rake snorby:update`
-	
+
 # Helpful Commands
 
 You can open the rails console at anytime and interact with the Snorby environment. Below are a few helpful commands that may be useful:
@@ -98,7 +98,7 @@ You can open the rails console at anytime and interact with the Snorby environme
 	Snorby::Worker.restart   # Restart The Snorby Worker
 
 **Snorby Cache Jobs**
-	
+
 	# This will manually run the sensor cache job - pass true or false for verbose output
 	Snorby::Jobs::SensorCacheJob.new(true).perform`
 
