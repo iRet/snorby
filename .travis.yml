@@ -1,8 +1,11 @@
 language: ruby
+
 rvm:
   - 2.2.5
+
 services:
   - mysql
+
 before_install:
   - PWD=`pwd`
   - "echo '## Installing dependencies'"
@@ -13,9 +16,13 @@ before_install:
   - "echo '## Installing wkhtmltox'"
   - "sudo dpkg -i wkhtmltox-0.12.2.1_linux-wheezy-amd64.deb"
   - "echo `which wkhtmltopdf`"
+
 before_script:
+  - cp $TRAVIS_BUILD_DIR/config/database.yml.example $TRAVIS_BUILD_DIR/config/database.yml
+  - cp $TRAVIS_BUILD_DIR/config/snorby_config.yml.example $TRAVIS_BUILD_DIR/config/snorby_config.yml
   - mysql -e 'create database snorby_test;'
   - bundle exec rake db:schema:load RAILS_ENV=test
   - bundle exec rake snorby:start_worker RAILS_ENV=test
+
 script:
   - bundle exec rake test
