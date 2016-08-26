@@ -1,14 +1,14 @@
 module Snorby
-  
+
   module Report
-    
+
     include Rails.application.routes.url_helpers # brings ActionDispatch::Routing::UrlFor
     include ActionView::Helpers::TagHelper
-    
+
     def self.build_report(range='yesterday', timezone="UTC")
 
       begin
-        Time.zone = timezone 
+        Time.zone = timezone
 
         @range = range
         set_defaults
@@ -36,10 +36,10 @@ module Snorby
 
         @last_cache = @cache.get_last ? @cache.get_last.ran_at : Time.now
 
-        sigs = Event.all(:limit => 5, :order => [:timestamp.desc], 
-                         :fields => [:sig_id], 
+        sigs = Event.all(:limit => 5, :order => [:timestamp.desc],
+                         :fields => [:sig_id],
                          :unique => true).map(&:signature).map(&:sig_id)
-        
+
 
         av = ActionView::Base.new(Rails.root.join('app', 'views'))
         av.assign({
@@ -62,17 +62,17 @@ module Snorby
           :last_cache => @last_cache
         })
 
-        pdf = PDFKit.new(av.render(:template => "page/dashboard.pdf.erb", 
+        pdf = PDFKit.new(av.render(:template => "page/dashboard.pdf.erb",
                                    :layout => 'layouts/pdf.html.erb'))
 
         pdf.stylesheets << Rails.root.join("public/stylesheets/pdf.css")
-        
+
         data = {
           :start_time => @start_time,
           :end_time => @end_time,
           :pdf => pdf.to_pdf
         }
-        
+
         return data
       ensure
         Time.zone = Snorby::CONFIG[:time_zone]
@@ -87,7 +87,7 @@ module Snorby
 
         @start_time = Time.zone.now.yesterday
         @end_time = Time.zone.now
-        
+
         # Fix This
         # @start_time = Time.zone.now.yesterday.beginning_of_day
         # @end_time = Time.zone.now.end_of_day
@@ -139,6 +139,6 @@ module Snorby
       end
 
     end
-    
+
   end
 end

@@ -1,7 +1,7 @@
 <%= title "Listing Sessions <i>(#{number_with_delimiter(@events.pager.total)} unique unclassified sessions)</i>".html_safe, 'Listing Sessions' do -%>
   <%= menu_item "Hotkeys", hotkey_events_path, 'events/keyboard.png', :class => 'snorbybox', :"data-width" => '753px' %>
 
-	<%= render :partial => 'events/menu' %>
+  <%= render :partial => 'events/menu' %>
 
   <%= drop_down_for('Filter Options', 'icons/filter.png', 'options') do %>
 
@@ -20,5 +20,5 @@
     sort: "<%= params[:sort] %>",
     direction: "<%= params[:direction] %>",
     timestamp: "<%= params[:_] %>"
-});
+  });
 </script>

@@ -316,24 +316,40 @@ class Event
     end
 
     if @classification
-      update = "UPDATE `events_with_join` as event SET `classification_id` = #{@classification}, `user_id` = #{uid} WHERE "
+      update = <<-SQL.squish + ' '
+        UPDATE event LEFT JOIN iphdr ON  event.cid = iphdr.cid
+                                     AND event.sid = iphdr.sid
+          SET event.classification_id = #{@classification},
+              event.user_id = #{uid} WHERE
+      SQL
+
       event_data = ids.split(',');
-      sql = "select * from events_with_join as event where "
+      sql = 'SELECT * FROM events_with_join AS event where '
       events = []
 
       event_data.each_with_index do |e, index|
         event = e.split('-')
         event_count += 1
 
-        events.push("(`sid` = #{event.first.to_i} and `cid` = #{event.last.to_i})")
+        events.push("(sid = #{event.first.to_i} AND cid = #{event.last.to_i})")
       end
 
       sql += events.join(' OR ')
       @events = db_select(sql)
 
       classification_sql = []
+
       @events.each do |event|
-        classification_sql.push "(classification_id is NULL AND signature = #{event.signature} AND ip_src = #{event.ip_src} AND ip_dst = #{event.ip_dst} AND sid = #{event.sid})"
+        src_condition = event.ip_src ? "ip_src = #{event.ip_src}" : "ip_src IS NULL"
+        dst_condition = event.ip_dst ? "ip_dst = #{event.ip_dst}" : "ip_dst IS NULL"
+
+        classification_sql.push <<-SQL.squish
+          (classification_id is NULL
+            AND signature = #{event.signature}
+            AND #{src_condition}
+            AND #{dst_condition}
+            AND event.sid = #{event.sid})
+        SQL
       end
 
       tmp = update += classification_sql.join(" OR ")
