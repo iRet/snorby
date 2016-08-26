@@ -597,7 +597,7 @@ class Event
 
   def in_xml
     # add user information
-    %{<snorby>#{to_xml}#{ip.to_xml}#{protocol_data.last.to_xml if protocol_data}#{classification.to_xml if classification}#{payload.to_xml if payload}</snorby>}.chomp
+    %{<snorby>#{to_xml}#{ip.try(:to_xml)}#{protocol_data.last.to_xml if protocol_data}#{classification.to_xml if classification}#{payload.to_xml if payload}</snorby>}.chomp
   end
 
   def in_json
@@ -606,9 +606,9 @@ class Event
       :sid => sid,
       :cid => cid,
       :ip => ip,
-      :src_ip => ip.ip_src.to_s,
+      :src_ip => ip_src.to_s,
       :src_port => src_port,
-      :dst_ip => ip.ip_dst.to_s,
+      :dst_ip => ip_dst.to_s,
       :dst_port => dst_port,
       :type => type,
       :proto => proto,

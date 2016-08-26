@@ -12,12 +12,12 @@
         </div>
 
         <div id="snorbybox-form">
-          <%= check_box_tag("use_ip_src", 1) %> <%= label_tag "use_ip_src", "Only for source address #{@event.ip.ip_src}".html_safe %><br />
+          <%= check_box_tag("use_ip_src", 1) %> <%= label_tag "use_ip_src", "Only for source address #{@event.ip_src}".html_safe %><br />
           <%= hidden_field_tag :ip_src, @event.ip_src.to_i %><br />
         </div>
 
         <div id="snorbybox-form">
-          <%= check_box_tag("use_ip_dst", 1) %> <%= label_tag "use_ip_dst", "Only for destination address #{@event.ip.ip_dst}".html_safe %><br />
+          <%= check_box_tag("use_ip_dst", 1) %> <%= label_tag "use_ip_dst", "Only for destination address #{@event.ip_dst}".html_safe %><br />
           <%= hidden_field_tag :ip_dst, @event.ip_dst.to_i %><br />
         </div>
 

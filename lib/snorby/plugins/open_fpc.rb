@@ -33,21 +33,21 @@ module Snorby
       # retrun [Hash] OpenFPC url params
       #
       def build_url_parameters
-        
+
         if Setting.packet_capture_auto_auth?
           @params.merge!(:user => Setting.find(:packet_capture_user)) if Setting.packet_capture_user?
           @params.merge!(:password => Setting.find(:packet_capture_password)) if Setting.packet_capture_password?
         end
 
         if @params.has_key?(:protocol)
-          @params.merge!(:filename => "snorby-#{@params[:protocol]}-#{@event.ip.ip_src.to_i}#{@event.ip.ip_dst.to_i}")
+          @params.merge!(:filename => "snorby-#{@params[:protocol]}-#{@event.ip_src.to_i}#{@event.ip_dst.to_i}")
         else
-          @params.merge!(:filename => "snorby-#{@event.ip.ip_src.to_i}#{@event.ip.ip_dst.to_i}")
+          @params.merge!(:filename => "snorby-#{@event.ip_src.to_i}#{@event.ip_dst.to_i}")
         end
-        
+
         @params[:stime] = @params[:stime].to_i
         @params[:etime] = @params[:etime].to_i
-        
+
         convert_to_params
       end
 

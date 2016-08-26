@@ -44,18 +44,18 @@
               <% if @event.ip.present? %>
 
               <dd>
-                <%= link_to "Source (1 Hour)", "#{@event.packet_capture(:source_ip => @event.ip.ip_src.to_s,
+                <%= link_to "Source (1 Hour)", "#{@event.packet_capture(:source_ip => @event.ip_src.to_s,
                 :start_time => (@event.timestamp - 30.minute),
                 :end_time => (@event.timestamp + 30.minute))}" %>
               </dd>
 
-              <dd><%= link_to "Destination (1 Hour)", "#{@event.packet_capture(:destination_ip => @event.ip.ip_dst.to_s,
+              <dd><%= link_to "Destination (1 Hour)", "#{@event.packet_capture(:destination_ip => @event.ip_dst.to_s,
                 :start_time => (@event.timestamp - 30.minute),
                 :end_time => (@event.timestamp + 30.minute))}" %>
               </dd>
 
-              <dd><%= link_to "Source & Destination (1 Hour)", "#{@event.packet_capture(:source_ip => @event.ip.ip_src.to_s,
-                :destination_ip => @event.ip.ip_dst.to_s,
+              <dd><%= link_to "Source & Destination (1 Hour)", "#{@event.packet_capture(:source_ip => @event.ip_src.to_s,
+                :destination_ip => @event.ip_dst.to_s,
                 :start_time => (@event.timestamp - 30.minute),
                 :end_time => (@event.timestamp + 30.minute))}" %>
               </dd>

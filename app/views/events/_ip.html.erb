@@ -1,7 +1,7 @@
 <div class='section-title plus'>IP Header Information</div>
 
 <div class='ip plus'>
-	
+
 	<table class='default' border='0' cellspacing='0' cellpadding='0'>
 		<tr>
 			<th class='first'>Source</th>
@@ -19,22 +19,22 @@
 		</tr>
 		<tbody>
 			<tr>
-        
+
         <td style='width:150px;' class='first'>
-          <a href='<%= Snorby::CONFIG[:baseuri] %>/events/lookup?address=<%= @event.ip.ip_src %>' 
-            data-address='<%= @event.ip.ip_src %>' class='ip-button has-event-menu' onclick="return false;">
-            
-            <%= @event.ip.ip_src %>
-            <%= clippy(@event.ip.ip_src, '#FFFFFF', "src-#{@event.id}") %>
+          <a href='<%= Snorby::CONFIG[:baseuri] %>/events/lookup?address=<%= @event.ip_src %>'
+            data-address='<%= @event.ip_src %>' class='ip-button has-event-menu' onclick="return false;">
+
+            <%= @event.ip_src %>
+            <%= clippy(@event.ip_src, '#FFFFFF', "src-#{@event.id}") %>
           </a>
-          
+
           <dl class='event-sub-menu round shadow push-down' style='display:none;'>
 
             <% if @current_user.admin %>
 
             <dd>
               <%= link_to "Edit Asset Name", "#",
-              :"data-ip_address" => @event.ip.ip_src,
+              :"data-ip_address" => @event.ip_src,
               :"data-agent_id" => @event.sensor.sid,
               :"data-asset_global" => @event.ip.asset_names[:source].try(:global),
               :"data-asset_agent_ids" => @event.ip.asset_names[:source].try(:agent_ids_string),
@@ -46,27 +46,27 @@
 
             <% end %>
 
-            <dd><%= link_to 'Basic Source Lookup', "#{Snorby::CONFIG[:baseuri]}/events/lookup?address=#{@event.ip.ip_src}", :class => 'snorbybox' %></dd>
+            <dd><%= link_to 'Basic Source Lookup', "#{Snorby::CONFIG[:baseuri]}/events/lookup?address=#{@event.ip_src}", :class => 'snorbybox' %></dd>
 
             <% @lookups.each do |lookup| %>
               <dd>
-              <%= link_to lookup.title, 
-                lookup.build(:ip => @event.ip.ip_src, :port => @event.source_port),
+              <%= link_to lookup.title,
+                lookup.build(:ip => @event.ip_src, :port => @event.source_port),
                 :target => '_blank' %>
               </dd>
             <% end %>
 
-            <dd><%= link_to "Snorby Search By Source", results_path(:title => "Source Address #{@event.ip.ip_src}", :match_all => true, :search => { :sip => { :column => :source_ip, :operator => :is, :value => @event.ip.ip_src}}) %></dd>
+            <dd><%= link_to "Snorby Search By Source", results_path(:title => "Source Address #{@event.ip_src}", :match_all => true, :search => { :sip => { :column => :source_ip, :operator => :is, :value => @event.ip_src}}) %></dd>
           </dl>
 
         </td>
 
         <td style='width:150px;'>
-          <a href='<%= Snorby::CONFIG[:baseuri] %>/events/lookup?address=<%= @event.ip.ip_dst %>' 
-            data-address='<%= @event.ip.ip_dst %>' class='ip-button has-event-menu'>
-            
-            <%= @event.ip.ip_dst %>
-            <%= clippy(@event.ip.ip_dst, '#FFFFFF', "dst-#{@event.id}") %>
+          <a href='<%= Snorby::CONFIG[:baseuri] %>/events/lookup?address=<%= @event.ip_dst %>'
+            data-address='<%= @event.ip_dst %>' class='ip-button has-event-menu'>
+
+            <%= @event.ip_dst %>
+            <%= clippy(@event.ip_dst, '#FFFFFF', "dst-#{@event.id}") %>
           </a>
 
           <dl class='event-sub-menu round shadow push-down' style='display:none;'>
@@ -75,7 +75,7 @@
             <% if @current_user.admin %>
             <dd>
               <%= link_to "Edit Asset Name", "#",
-              :"data-ip_address" => @event.ip.ip_dst,
+              :"data-ip_address" => @event.ip_dst,
               :"data-agent_id" => @event.sensor.sid,
               :"data-asset_global" => @event.ip.asset_names[:destination].try(:global),
               :"data-asset_agent_ids" => @event.ip.asset_names[:destination].try(:agent_ids_string),
@@ -85,20 +85,20 @@
             </dd>
             <% end %>
 
-            <dd><%= link_to 'Basic Destination Lookup', "#{Snorby::CONFIG[:baseuri]}/events/lookup?address=#{@event.ip.ip_dst}", :class => 'snorbybox' %></dd>
-            
+            <dd><%= link_to 'Basic Destination Lookup', "#{Snorby::CONFIG[:baseuri]}/events/lookup?address=#{@event.ip_dst}", :class => 'snorbybox' %></dd>
+
             <% @lookups.each do |lookup| %>
               <dd>
-              <%= link_to lookup.title, 
-                lookup.build(:ip => @event.ip.ip_dst, :port => @event.destination_port),
+              <%= link_to lookup.title,
+                lookup.build(:ip => @event.ip_dst, :port => @event.destination_port),
                 :target => '_blank' %>
               </dd>
             <% end %>
 
-            <dd><%= link_to "Snorby Search By Destination", results_path(:title => "Destination Address #{@event.ip.ip_dst}", :match_all => true, :search => {:sip => { :column => :destination_ip, :operator => :is, :value => @event.ip.ip_dst}}) %></dd>
+            <dd><%= link_to "Snorby Search By Destination", results_path(:title => "Destination Address #{@event.ip_dst}", :match_all => true, :search => {:sip => { :column => :destination_ip, :operator => :is, :value => @event.ip_dst}}) %></dd>
           </dl
         </td>
-        
+
         <td><%= @event.ip.ip_ver %></td>
 				<td><%= @event.ip.ip_hlen %></td>
 				<td><%= @event.ip.ip_tos %></td>
@@ -112,5 +112,5 @@
 			</tr>
 		</tbody>
 	</table>
-	
+
 </div>

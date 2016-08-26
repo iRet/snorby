@@ -45,7 +45,7 @@
       <% end %>
 
       <% if event.ip.present? && event.ip.asset_names[:source] %>
-        <div class='asset-name add_tipsy_html click' original-title="<%= event.ip.present? ? event.ip.ip_src : 'N/A' %> - <%= event.ip.asset_names[:source].name %>">
+        <div class='asset-name add_tipsy_html click' original-title="<%= event.ip_src %> - <%= event.ip.asset_names[:source].name %>">
           <%= event.ip.asset_names[:source].name %>
         </div>
       <% else %>
