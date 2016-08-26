@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160527182126) do
+ActiveRecord::Schema.define(version: 20160826142946) do
 
   create_table "agent_asset_names", id: false, force: :cascade do |t|
     t.integer "sensor_sid",    limit: 4, null: false
@@ -385,4 +385,12 @@ ActiveRecord::Schema.define(version: 20160527182126) do
   add_index "users", ["notes_count"], name: "index_users_notes_count", using: :btree
   add_index "users", ["per_page_count"], name: "index_users_per_page_count", using: :btree
 
+
+  create_view :aggregated_events,  sql_definition: <<-SQL
+      select `iphdr`.`ip_src` AS `ip_src`,`iphdr`.`ip_dst` AS `ip_dst`,`event`.`signature` AS `signature`,max(`event`.`id`) AS `event_id`,count(0) AS `number_of_events` from (`event` left join `iphdr` on(((`event`.`sid` = `iphdr`.`sid`) and (`event`.`cid` = `iphdr`.`cid`)))) where isnull(`event`.`classification_id`) group by `iphdr`.`ip_src`,`iphdr`.`ip_dst`,`event`.`signature`
+  SQL
+
+  create_view :events_with_join,  sql_definition: <<-SQL
+      select `event`.`sid` AS `sid`,`event`.`cid` AS `cid`,`event`.`signature` AS `signature`,`event`.`classification_id` AS `classification_id`,`event`.`users_count` AS `users_count`,`event`.`user_id` AS `user_id`,`event`.`notes_count` AS `notes_count`,`event`.`type` AS `type`,`event`.`number_of_events` AS `number_of_events`,`event`.`timestamp` AS `timestamp`,`event`.`id` AS `id`,`iphdr`.`ip_src` AS `ip_src`,`iphdr`.`ip_dst` AS `ip_dst`,`signature`.`sig_priority` AS `sig_priority`,`signature`.`sig_name` AS `sig_name` from ((`event` left join `iphdr` on(((`event`.`sid` = `iphdr`.`sid`) and (`event`.`cid` = `iphdr`.`cid`)))) join `signature` on((`event`.`signature` = `signature`.`sig_id`)))
+  SQL
 end

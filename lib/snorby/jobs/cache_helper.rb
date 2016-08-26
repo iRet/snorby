@@ -268,13 +268,15 @@ module Snorby
           db_execute("alter table event change column id id int not null auto_increment;")
         end
 
-        puts "[~] (Re)Building `aggregated_events` database view"
-        db_execute("drop view aggregated_events;") if has_aggregated_events_view?
-        db_execute("create view `aggregated_events` AS select `iphdr`.`ip_src` AS `ip_src`, `iphdr`.`ip_dst` AS `ip_dst`, `event`.`signature` AS `signature`,max(`event`.`id`) AS `event_id`,count(0) AS `number_of_events` from (`event` left join `iphdr` on(((`event`.`sid` = `iphdr`.`sid`) and (`event`.`cid` = `iphdr`.`cid`)))) where isnull(`event`.`classification_id`) group by `iphdr`.`ip_src`,`iphdr`.`ip_dst`,`event`.`signature`;")
+        if has_aggregated_events_view?
+          puts "[~] Building `aggregated_events` database view"
+          db_execute("create view `aggregated_events` AS select `iphdr`.`ip_src` AS `ip_src`, `iphdr`.`ip_dst` AS `ip_dst`, `event`.`signature` AS `signature`,max(`event`.`id`) AS `event_id`,count(0) AS `number_of_events` from (`event` left join `iphdr` on(((`event`.`sid` = `iphdr`.`sid`) and (`event`.`cid` = `iphdr`.`cid`)))) where isnull(`event`.`classification_id`) group by `iphdr`.`ip_src`,`iphdr`.`ip_dst`,`event`.`signature`;")
+        end
 
-        puts "[~] (Re)Building `events_with_join` database view"
-        db_execute("drop view events_with_join;") if has_event_with_join_view?
-        db_execute("create view events_with_join as select event.*, iphdr.ip_src, iphdr.ip_dst, signature.sig_priority, signature.sig_name from event  left join iphdr on event.sid = iphdr.sid and event.cid = iphdr.cid inner join signature on event.signature = signature.sig_id;")
+        if has_event_with_join_view?
+          puts "[~] Building `events_with_join` database view"
+          db_execute("create view events_with_join as select event.*, iphdr.ip_src, iphdr.ip_dst, signature.sig_priority, signature.sig_name from event  left join iphdr on event.sid = iphdr.sid and event.cid = iphdr.cid inner join signature on event.signature = signature.sig_id;")
+        end
       end
       alias :checkdb :validate_cache_indexes
 

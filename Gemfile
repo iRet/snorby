@@ -43,6 +43,8 @@ gem 'will_paginate',               '~> 3.1.0'
 
 gem 'delayed_job_active_record',   '~> 4.1.1'
 gem 'composite_primary_keys',      '~> 8.1'
+gem 'scenic',                      '1.1.1'
+gem 'scenic_mysql',                '~> 0.1.3'
 
 # Working On This
 # gem 'delayed_job',                 '~> 3.0'

@@ -104,7 +104,6 @@ module Snorby
     # config.action_view.javascript_expansions[:defaults] = %w(jquery rails)
 
     config.generators do |g|
-      g.orm             :data_mapper
       g.template_engine :erb
       g.test_framework  :rspec
     end
