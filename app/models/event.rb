@@ -496,12 +496,11 @@ class Event < ActiveRecord::Base
   #
   def self.to_json_since(time)
 
-    time  != Time.zone.now
-    events = Event.all(:timestamp.gt => Time.zone.parse(time.to_s),
-                       :classification_id => nil,
-                       :order => [:timestamp.desc])
-
-    json = {:events => []}
+    time ||= Time.zone.now
+    events = Event.where(classification_id: nil)
+                  .where('timestamp > ?', Time.zone.parse(time.to_s))
+                  .order(timestamp: :desc)
+    json = { events: [] }
 
     events.each do |event|
       event = {
