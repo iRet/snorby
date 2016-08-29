@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<%= render :partial => 'layouts/version.html.erb' %>
+<%= render partial: 'layouts/version' %>
 
 <html class='login'>
   <head>
@@ -30,8 +30,8 @@
       <hr>
       <div class="login-footer">
       &copy; <%= Time.now.year %> <a href="https://threatstack.com">Threat Stack, Inc</a> - Created By: Dustin Willis Webber
-      <br /><br /> 
-        Snorby <%= Snorby::VERSION %> - <%= link_to 'https://github.com/Snorby/snorby', 'https://github.com/Snorby/snorby' %> 
+      <br /><br />
+        Snorby <%= Snorby::VERSION %> - <%= link_to 'https://github.com/Snorby/snorby', 'https://github.com/Snorby/snorby' %>
       </div>
     </div>
     <%- flash.each do |type, message| -%>
