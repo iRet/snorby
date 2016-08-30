@@ -939,7 +939,8 @@ var Snorby = {
           if (data.hasOwnProperty('events')) {
             for (var i = 0; i < data.events.length; i += 1) {
               var event = data.events[i];
-              var row = $('li.event[data-session-id="'+event.ip_src+'_'+event.ip_dst+'_'+event.sig_id+'"]');
+              var row = $('li.event[data-session-id="' + event.ip_src + '_' + event.ip_dst + '_'+event.sig_id + '"]' +
+                                  '[id="event_' + event.sid + event.cid + '"]');
 
               if (row.length > 0) {
                 if (parseInt(row.find('div.session-count').attr('data-sessions')) !== event.session_count) {
