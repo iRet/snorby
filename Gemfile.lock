@@ -9,14 +9,6 @@ GIT
       dm-observer
 
 GIT
-  remote: https://github.com/mephux/ezprint.git
-  revision: c231df760dae8a2d4bc906888285c6d314de4cf6
-  branch: rails3
-  specs:
-    ezprint (0.2.0)
-      pdfkit (>= 0.4.1)
-
-GIT
   remote: https://github.com/postmodern/dm-is-read_only.git
   revision: 43ffedc64a261b12ee324db616a427048e14ba4c
   specs:
@@ -164,6 +156,8 @@ GEM
     env (0.3.0)
     erubis (2.7.0)
     eventmachine (1.2.0.1)
+    ezprint (1.0.0)
+      pdfkit (~> 0.5.0)
     fastercsv (1.5.5)
     geoip (1.1.2)
     highline (1.7.8)
@@ -203,7 +197,7 @@ GEM
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
     orm_adapter (0.0.7)
-    pdfkit (0.4.6)
+    pdfkit (0.5.4)
     pkg-config (1.1.7)
     polyglot (0.3.5)
     power_assert (0.3.0)
@@ -322,7 +316,7 @@ DEPENDENCIES
   dm-visualizer (~> 0.1.0)
   dm-zone-types (~> 0.3)
   env
-  ezprint!
+  ezprint (~> 1.0.0)
   geoip (~> 1.1.1)
   home_run
   jammit (~> 0.5.4)
@@ -335,7 +329,7 @@ DEPENDENCIES
   minitest
   net-dns (~> 0.6.1)
   netaddr (~> 1.5.0)
-  pdfkit (~> 0.4.6)
+  pdfkit (~> 0.5.0)
   rails (= 3.2.22.4)
   railties (= 3.2.22.4)
   rake (= 10.1.0)
