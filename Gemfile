@@ -51,7 +51,9 @@ gem 'dm-chunked_query',            '~> 0.3'
 gem 'capistrano',                  '2.14.1'
 
 # Rails Plugins
-gem 'jammit',                      '~> 0.5.4'
+gem 'jammit',                      '~> 0.7.0'
+gem 'uglifier'
+gem 'mini_racer'
 gem 'cancan',                      '~> 1.6'
 gem 'devise',                      '~> 1.4'
 gem 'dm-devise',                   '~> 1.5'
