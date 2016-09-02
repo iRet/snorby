@@ -5,6 +5,10 @@
 * [github.com/Snorby/snorby/wiki](http://github.com/Snorby/snorby/wiki)
 * irc.freenode.net #snorby
 
+## Note
+This fork is compatible with iphdr-less snort events version of snorby.  
+It supports signatures such as frag3: overlap, spp_arpspoofing, etc.
+
 ## Description
 
 Snorby is a ruby on rails web application for network security monitoring that interfaces with current popular intrusion detection systems (Snort, Suricata and Sagan). The basic fundamental concepts behind Snorby are **simplicity**, organization and power. The project goal is to create a free, open source and highly competitive application for network monitoring for both private and enterprise use.
